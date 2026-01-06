@@ -1,20 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useEffect, useState } from "react";
-import { HiOutlineX, HiOutlineCheck } from "react-icons/hi";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link, useParams } from "react-router-dom";
-import axios from "axios";
-import { RootState, useAppDispatch } from "../../../../redux/store";
-import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { addSlider } from "../../../../redux/slices/Slider";
-import {
-  addUser,
-  getUser,
-  updateUser,
-} from "../../../../redux/slices/userSlice";
+import { HiOutlineCheck, HiOutlineX } from "react-icons/hi";
 import { useSelector } from "react-redux";
-import { update } from "../../../../api-cilent/User";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  getUser,
+  updateUser
+} from "../../../../redux/slices/userSlice";
+import { RootState, useAppDispatch } from "../../../../redux/store";
 type Inputs = {
   fullname: string;
   email: string;
@@ -27,6 +22,11 @@ const UserEdit = () => {
   const users = useSelector((state: RootState) => state.user);
   const [status, setStatus] = useState(users.User.status);
   const navigate = useNavigate();
+
+  // Lấy thông tin user đang đăng nhập từ localStorage
+  const currentUser = JSON.parse(localStorage.getItem("user") as string);
+  const currentUserId = currentUser?.users?.id || currentUser?.id;
+
   console.log(status);
 
   const {
@@ -150,14 +150,20 @@ const UserEdit = () => {
                     </label>
 
                     <select
-                      className="p-2"
+                      className={`p-2 ${currentUserId === id ? 'bg-gray-200 cursor-not-allowed' : ''}`}
                       id=""
                       value={status}
                       onChange={(e: any) => setStatus(e.target.value)}
+                      disabled={currentUserId === id}
                     >
                       <option value="active">Active</option>
                       <option value="block">Block</option>
                     </select>
+                    {currentUserId === id && (
+                      <p className="text-sm mt-0.5 text-yellow-600">
+                        Bạn không thể tự thay đổi trạng thái của chính mình
+                      </p>
+                    )}
                     <p className="text-sm mt-0.5 text-red-500">
                       {errors.status?.message}
                     </p>
