@@ -231,7 +231,7 @@ const orderSlice = createSlice({
 
         state.check = payload as boolean;
       }),
-      builder.addCase(orderConfirm.fulfilled, (state) => {
+      builder.addCase(orderConfirm.fulfilled, () => {
       }),
       builder.addCase(updateOrder.fulfilled, (state, { payload }) => {
         state.orders = state.orders.map((item: any) =>
@@ -241,7 +241,7 @@ const orderSlice = createSlice({
       builder.addCase(infoOrder.fulfilled, (state, { payload }) => {
         state.orderinfo = payload;
       }),
-      builder.addCase(cancelOrder.fulfilled, (state) => { }),
+      builder.addCase(cancelOrder.fulfilled, () => { }),
       builder.addCase(searchOrder.fulfilled, (state, { payload }) => {
         console.log("searchOrder", payload);
 

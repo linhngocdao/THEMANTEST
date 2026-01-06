@@ -48,12 +48,8 @@ const CartUpdate = () => {
     ) {
       return toast.error("Đơn hàng này đã giao hoặc đang được giao");
     }
-    let payment_type_id = 2;
-    if (data?.payment_status == 1) {
-      payment_type_id = 1;
-    } else {
-      payment_type_id = 2;
-    }
+    // payment_type_id: 1 = Shop trả phí ship, 2 = Người nhận trả phí ship (mặc định)
+    const payment_type_id = 2;
 
     const products = orderData?.product || data?.product || [];
     const infomation = orderData?.infomation || data?.infomation || {};
@@ -65,58 +61,39 @@ const CartUpdate = () => {
       return toast.error("Thiếu thông tin địa chỉ giao hàng (quận/phường)");
     }
 
+    // Tính tổng số lượng sản phẩm
+    const totalQuantity = products?.reduce((sum: number, item: any) => sum + (item.quantity || 1), 0) || 1;
+
+    // Tính tổng giá trị bảo hiểm
+    const totalInsurance = products?.reduce((sum: number, item: any) => sum + ((item.price || 0) * (item.quantity || 1)), 0) || 0;
+
+    // Format items đơn giản theo GHN yêu cầu
     const formattedItems = products?.map((item: any) => ({
       name: item.name || "Sản phẩm",
-      code: item.code || item._id || "",
       quantity: item.quantity || 1,
       price: item.price || 0,
-      length: item.length || 12,
-      width: item.width || 12,
-      height: item.height || 12,
-      weight: item.weight || 200,
-      category: {
-        level1: "Áo"
-      }
     })) || [];
 
+    // Payload đơn giản theo format GHN
     const infocart = {
+      shop_id: 120366,
       payment_type_id: payment_type_id,
-      note: infomation?.note || "The Man",
-      required_note: "KHONGCHOXEMHANG",
-      from_name: "The Man",
-      from_phone: "0373052002",
-      from_address:
-        "Chung Cư Ct6, Ngõ 89 Đường Lê Đức Thọ, Phường Mỹ Đình 2, Quận Nam Từ Liêm, Hà Nội",
-      from_ward_name: "Phường Mỹ Đình 2",
-      from_district_name: "Quận Nam Từ Liêm",
-      from_province_name: "Hà Nội",
-      from_district_id: 1454,
-      from_ward_code: "21211",
-      return_phone: "0373052002",
-      return_address:
-        "Chung Cư Ct6, Ngõ 89 Đường Lê Đức Thọ, Phường Mỹ Đình 2, Quận Nam Từ Liêm, Hà Nội",
-      return_district_id: 1454,
-      return_ward_code: "21211",
-      client_order_code: "",
       to_name: infomation?.fullname,
       to_phone: infomation?.phonenumber,
       to_address: infomation?.address,
       to_ward_code: String(infomation?.to_ward_code || ""),
       to_district_id: Number(infomation?.to_district_id) || null,
-      cod_amount: orderData?.totalprice || data?.totalprice || 0,
-      content: infomation?.note || "",
-      weight: orderData?.weight || data?.weight || 200,
-      length: orderData?.length || data?.length || 1,
-      width: orderData?.width || data?.width || 19,
-      height: orderData?.height || data?.height || 10,
-      pick_station_id: null,
-      deliver_station_id: null,
-      insurance_value: orderData?.productmonney || data?.productmonney || 10000000,
+      weight: orderData?.weight || data?.weight || 1000,
+      length: 15,
+      width: 15,
+      height: 15,
+      insurance_value: totalInsurance,
       service_id: 0,
       service_type_id: 2,
-      coupon: null,
       pick_shift: [2],
       items: formattedItems,
+      quantity: totalQuantity,
+      required_note: infomation?.note || "KHONGCHOXEMHANG",
     };
 
     if (data.status === 2 && data.order_code) {
@@ -150,16 +127,21 @@ const CartUpdate = () => {
           to_ward_code: infocart.to_ward_code,
           to_district_id: infocart.to_district_id,
         });
-        console.log("COD amount:", infocart.cod_amount);
+        console.log("Insurance value:", infocart.insurance_value);
         const res = await dispatch(orderConfirm(infocart));
         if (res?.payload?.code == 200) {
-          data.order_code = res?.payload?.data?.order_code;
+          const newOrderCode = res?.payload?.data?.order_code;
+          console.log("Đơn hàng GHN tạo thành công! Order code:", newOrderCode);
+
+          // Lưu order_code vào database
+          data.order_code = newOrderCode;
+          data.status = 1; // Cập nhật trạng thái đã xác nhận
+          await dispatch(updateOrder(data));
+
+          toast.success("Tạo đơn hàng GHN thành công! Mã: " + newOrderCode);
           navigate("/admin/carts");
         } else {
-          toast.info(res?.error?.message);
-        }
-        if (data.order_code) {
-          toast.info("Thành công");
+          toast.error(res?.payload?.message || "Lỗi tạo đơn hàng GHN");
         }
       } catch (error) {
         console.log("error", error);
