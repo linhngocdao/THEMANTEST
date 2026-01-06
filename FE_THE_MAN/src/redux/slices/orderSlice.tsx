@@ -1,19 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { removeCart } from "../../api-cilent/Cart";
 import {
-  AddOrderApi,
-  countProductApi,
   findOrder,
   GetOrdersApi,
   readOrdertApi,
   removeOrderApi,
-  UpdateQuantityCart,
   UpdateQuantityCart2,
-  updateStatusOrderApi,
+  updateStatusOrderApi
 } from "../../api-cilent/Orders";
-import { get } from "../../api-cilent/Product";
 type orderState = {
   order: {};
   orders: any[];
@@ -45,25 +40,36 @@ export const removeOrder = createAsyncThunk(
 
 export const infoOrder = createAsyncThunk(
   "orders/infoorder",
-  async (id: string) => {
+  async (orderCode: string) => {
+    if (!orderCode) {
+      console.log("infoOrder: Không có order_code, bỏ qua việc gọi API GHN");
+      return {
+        data: null,
+        log: [{ status: "" }],
+      };
+    }
+
+    console.log("Gọi API GHN để lấy thông tin đơn");
+    console.log("order_code:", orderCode);
+
     try {
       const res = await axios.post(
         "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail",
-        id,
+        { order_code: orderCode },
         {
           headers: {
+            "Content-Type": "application/json",
             Token: "755b4fbb-5918-11ed-bd1f-1a28f04fff2f",
           },
         }
       );
+      console.log("infoOrder Response:", res.data);
       return res.data;
-    } catch (err) {
+    } catch (err: any) {
+      console.log("infoOrder Error:", err?.response?.data);
       return {
-        log: [
-          {
-            status: "",
-          },
-        ],
+        data: null,
+        log: [{ status: "" }],
       };
     }
   }
@@ -166,6 +172,15 @@ export const searchOrder = createAsyncThunk(
 export const orderConfirm = createAsyncThunk(
   "orders/orderconfirm",
   async (data: any) => {
+    console.log("DEBUG orderConfirm: Gọi API GHN");
+    console.log("URL:", "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create");
+    console.log("Headers:", {
+      "Content-Type": "application/json",
+      ShopId: 120366,
+      Token: "755b4fbb-5918-11ed-bd1f-1a28f04fff2f",
+    });
+    console.log("Request Body:", JSON.stringify(data, null, 2));
+
     try {
       const res = await axios.post(
         "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create",
@@ -178,12 +193,20 @@ export const orderConfirm = createAsyncThunk(
           },
         }
       );
+      console.log("=== DEBUG orderConfirm: Response thành công ===");
+      console.log("Response data:", res.data);
+      console.log("Order code:", res.data?.data?.order_code);
       return res.data;
-    } catch (er:any) {
+    } catch (er: any) {
+      console.log("=== DEBUG orderConfirm: Lỗi từ GHN ===");
+      console.log("Error response:", er?.response?.data);
+      console.log("Error status:", er?.response?.status);
+      console.log("Error message:", er?.response?.data?.message);
+      console.log("Error code_message_value:", er?.response?.data?.code_message_value);
       toast.error(er?.response?.data.code_message_value)
       toast.error(er?.response?.data.message)
-    } 
-    
+    }
+
   }
 );
 
@@ -208,7 +231,7 @@ const orderSlice = createSlice({
 
         state.check = payload as boolean;
       }),
-      builder.addCase(orderConfirm.fulfilled, (state, { payload }) => {
+      builder.addCase(orderConfirm.fulfilled, (state) => {
       }),
       builder.addCase(updateOrder.fulfilled, (state, { payload }) => {
         state.orders = state.orders.map((item: any) =>
@@ -218,7 +241,7 @@ const orderSlice = createSlice({
       builder.addCase(infoOrder.fulfilled, (state, { payload }) => {
         state.orderinfo = payload;
       }),
-      builder.addCase(cancelOrder.fulfilled, (state, { payload }) => {}),
+      builder.addCase(cancelOrder.fulfilled, (state) => { }),
       builder.addCase(searchOrder.fulfilled, (state, { payload }) => {
         console.log("searchOrder", payload);
 

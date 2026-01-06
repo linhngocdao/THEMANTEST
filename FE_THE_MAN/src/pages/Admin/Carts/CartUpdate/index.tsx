@@ -1,12 +1,11 @@
-import axios from "axios";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { HiOutlineCheck, HiOutlineX, HiRefresh } from "react-icons/hi";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { HiRefresh } from "react-icons/hi";
 import NumberFormat from "react-number-format";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   cancelOrder,
   infoOrder,
@@ -14,11 +13,7 @@ import {
   readOrder,
   updateOrder,
 } from "../../../../redux/slices/orderSlice";
-import {
-  checkVoucher,
-  GETVoucherX,
-} from "../../../../redux/slices/voucherSlice";
-import { formatCurrency, formatDateGHN } from "../../../../ultis";
+import { formatCurrency } from "../../../../ultis";
 
 const CartUpdate = () => {
   const dispatch = useDispatch<any>();
@@ -28,7 +23,6 @@ const CartUpdate = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
     reset,
   } = useForm();
   const order = useSelector((state: any) => state.orders);
@@ -37,7 +31,8 @@ const CartUpdate = () => {
   const onUpdate = async (data: any) => {
     data.payment_status = parseInt(data.payment_status);
     data.status = parseInt(data.status);
-    let product = [];
+
+    const orderData = order.order;
 
     if (order.order.status == 1 && data.status == 1) {
       return toast.error("Đơn hàng đã được xác nhận");
@@ -59,47 +54,69 @@ const CartUpdate = () => {
     } else {
       payment_type_id = 2;
     }
-    product = data.product;
+
+    const products = orderData?.product || data?.product || [];
+    const infomation = orderData?.infomation || data?.infomation || {};
+
+    if (!infomation?.fullname || !infomation?.phonenumber) {
+      return toast.error("Thiếu thông tin người nhận (tên hoặc số điện thoại)");
+    }
+    if (!infomation?.to_ward_code || !infomation?.to_district_id) {
+      return toast.error("Thiếu thông tin địa chỉ giao hàng (quận/phường)");
+    }
+
+    const formattedItems = products?.map((item: any) => ({
+      name: item.name || "Sản phẩm",
+      code: item.code || item._id || "",
+      quantity: item.quantity || 1,
+      price: item.price || 0,
+      length: item.length || 12,
+      width: item.width || 12,
+      height: item.height || 12,
+      weight: item.weight || 200,
+      category: {
+        level1: "Áo"
+      }
+    })) || [];
+
     const infocart = {
       payment_type_id: payment_type_id,
-      note: "The Man",
+      note: infomation?.note || "The Man",
+      required_note: "KHONGCHOXEMHANG",
       from_name: "The Man",
       from_phone: "0373052002",
       from_address:
-        "Chung Cư Ct6, Ngõ 89 Đường Lê Đức Thọ Phường Mỹ Đình 2, Quận Nam Từ Liêm, Hà Nội",
+        "Chung Cư Ct6, Ngõ 89 Đường Lê Đức Thọ, Phường Mỹ Đình 2, Quận Nam Từ Liêm, Hà Nội",
       from_ward_name: "Phường Mỹ Đình 2",
       from_district_name: "Quận Nam Từ Liêm",
       from_province_name: "Hà Nội",
-      required_note: "CHOTHUHANG",
-      return_name: "The Man",
+      from_district_id: 1454,
+      from_ward_code: "21211",
       return_phone: "0373052002",
       return_address:
-        "Chung Cư Ct6, Ngõ 89 Đường Lê Đức Thọ Phường Mỹ Đình 2, Quận Nam Từ Liêm, Hà Nội",
-      return_ward_name: "Phường Mỹ Đình 2",
-      return_district_name: "Quận Nam Từ Liêm",
-      return_province_name: "Hà Nội",
+        "Chung Cư Ct6, Ngõ 89 Đường Lê Đức Thọ, Phường Mỹ Đình 2, Quận Nam Từ Liêm, Hà Nội",
+      return_district_id: 1454,
+      return_ward_code: "21211",
       client_order_code: "",
-      to_name: data?.infomation?.fullname,
-      to_phone: data?.infomation?.phonenumber,
-      to_address: data?.infomation?.address,
-      to_ward_name: data?.infomation?.to_ward_name,
-      to_district_name: data?.infomation?.to_district_name,
-      to_province_name: data?.infomation?.to_province_name,
-      cod_amount: data?.totalprice,
-      content: data?.infomation?.note,
-      weight: data?.weight,
-      length: data?.length,
-      width: data?.width,
-      height: data?.height,
+      to_name: infomation?.fullname,
+      to_phone: infomation?.phonenumber,
+      to_address: infomation?.address,
+      to_ward_code: String(infomation?.to_ward_code || ""),
+      to_district_id: Number(infomation?.to_district_id) || null,
+      cod_amount: orderData?.totalprice || data?.totalprice || 0,
+      content: infomation?.note || "",
+      weight: orderData?.weight || data?.weight || 200,
+      length: orderData?.length || data?.length || 1,
+      width: orderData?.width || data?.width || 19,
+      height: orderData?.height || data?.height || 10,
       pick_station_id: null,
       deliver_station_id: null,
-      insurance_value: data?.productmonney,
+      insurance_value: orderData?.productmonney || data?.productmonney || 10000000,
+      service_id: 0,
       service_type_id: 2,
-      service_id:null,
       coupon: null,
-      pick_shift: null,
-      pickup_time: null,
-      items: product,
+      pick_shift: [2],
+      items: formattedItems,
     };
 
     if (data.status === 2 && data.order_code) {
@@ -118,6 +135,22 @@ const CartUpdate = () => {
     }
     if (data.status === 1) {
       try {
+        console.log(" gửi đơn hàng lên GHN");
+        console.log("order.order:", order.order);
+        console.log("order.order.infomation:", order.order?.infomation);
+        console.log("to_ward_code từ DB:", data?.infomation?.to_ward_code);
+        console.log("to_district_id từ DB:", data?.infomation?.to_district_id);
+        console.log("=================================");
+        console.log("Payload gửi lên GHN:", JSON.stringify(infocart, null, 2));
+        console.log("Chi tiết items:", infocart.items);
+        console.log("Thông tin người nhận:", {
+          to_name: infocart.to_name,
+          to_phone: infocart.to_phone,
+          to_address: infocart.to_address,
+          to_ward_code: infocart.to_ward_code,
+          to_district_id: infocart.to_district_id,
+        });
+        console.log("COD amount:", infocart.cod_amount);
         const res = await dispatch(orderConfirm(infocart));
         if (res?.payload?.code == 200) {
           data.order_code = res?.payload?.data?.order_code;
@@ -126,7 +159,6 @@ const CartUpdate = () => {
           toast.info(res?.error?.message);
         }
         if (data.order_code) {
-          const update = await dispatch(updateOrder(data));
           toast.info("Thành công");
         }
       } catch (error) {
@@ -136,65 +168,35 @@ const CartUpdate = () => {
   };
   let currentstatus = "";
   if (order?.orderinfo?.data?.status == "ready_to_pick") {
-    currentstatus = "Mới tạo đơn hàng";
   } else if (order?.orderinfo?.data?.status == "picking") {
-    currentstatus = "Nhân viên đang lấy hàng";
   } else if (order?.orderinfo?.data?.status == "cancel") {
-    currentstatus = "Hủy đơn hàng";
   } else if (order?.orderinfo?.data?.status == "money_collect_picking") {
-    currentstatus = "Đang thu tiền người gửi";
   } else if (order?.orderinfo?.data?.status == "picked") {
-    currentstatus = "Nhân viên đã lấy hàng";
   } else if (order?.orderinfo?.data?.status == "storing") {
-    currentstatus = "Hàng đang nằm ở kho";
   } else if (order?.orderinfo?.data?.status == "transporting") {
-    currentstatus = "Đang luân chuyển hàng";
   } else if (order?.orderinfo?.data?.status == "delivering") {
-    currentstatus = "Nhân viên đang giao cho người nhận";
   } else if (order?.orderinfo?.data?.status == "money_collect_delivering") {
-    currentstatus = "Nhân viên đang thu tiền người nhận";
   } else if (order?.orderinfo?.data?.status == "delivered") {
-    currentstatus = "Nhân viên đã giao hàng thành công";
   } else if (order?.orderinfo?.data?.status == "delivery_fail") {
-    currentstatus = "Nhân viên giao hàng thất bại";
   } else if (order?.orderinfo?.data?.status == "waiting_to_return") {
-    currentstatus = "Đang đợi trả hàng về cho người gửi";
   } else if (order?.orderinfo?.data?.status == "return") {
-    currentstatus = "Trả hàng";
   } else if (order?.orderinfo?.data?.status == "return_transporting") {
-    currentstatus = "Đang luân chuyển hàng trả";
   } else if (order?.orderinfo?.data?.status == "return_sorting") {
-    currentstatus = "Đang phân loại hàng trả";
   } else if (order?.orderinfo?.data?.status == "returning") {
-    currentstatus = "Nhân viên đang đi trả hàng";
   } else if (order?.orderinfo?.data?.status == "return_fail") {
-    currentstatus = "Nhân viên trả hàng thất bại";
   } else if (order?.orderinfo?.data?.status == "returned") {
-    currentstatus = "Nhân viên trả hàng thành công";
   } else if (order?.orderinfo?.data?.status == "exception") {
-    currentstatus = "Đơn hàng ngoại lệ không nằm trong quy trình";
   } else if (order?.orderinfo?.data?.status == "damage") {
-    currentstatus = "Hàng bị hư hỏng";
   } else if (order?.orderinfo?.data?.status == "lost") {
-    currentstatus = "Hàng bị mất";
   } else {
-    currentstatus = order?.orderinfo?.data?.status;
+    ;
   }
   useEffect(() => {
     (async () => {
-      const carts = await dispatch(readOrder(id!));
-      const raw = {
-        view: true,
-        update: false,
-        _id: carts?.payload?.voucher,
-        iduser: carts?.payload?.userID,
-      };
-      const vouc = await dispatch(GETVoucherX(raw));
-      reset(carts?.payload);
-      let orderId: any = {
-        order_code: carts?.payload?.order_code,
-      };
-      dispatch(infoOrder(orderId || ""));
+      const orderData = await dispatch(readOrder(id!));
+      reset();
+      const orderCode = orderData?.payload?.order_code || "";
+      dispatch(infoOrder(orderCode));
     })();
   }, [id, dispatch, order?.order?.voucher]);
   const onPrint = () => {
@@ -266,73 +268,73 @@ const CartUpdate = () => {
                   <td className=" py-10  gap-8">
                     {order?.orderinfo?.data?.log
                       ? order?.orderinfo?.data?.log?.map(
-                          (item: any, index: number) => {
-                            let status = "";
-                            if (item.status == "ready_to_pick") {
-                              status = "Mới tạo đơn hàng";
-                            } else if (item.status == "picking") {
-                              status = "Nhân viên đang lấy hàng";
-                            } else if (item.status == "cancel") {
-                              status = "Hủy đơn hàng";
-                            } else if (item.status == "money_collect_picking") {
-                              status = "Đang thu tiền người gửi";
-                            } else if (item.status == "picked") {
-                              status = "Nhân viên đã lấy hàng";
-                            } else if (item.status == "storing") {
-                              status = "Hàng đang nằm ở kho";
-                            } else if (item.status == "transporting") {
-                              status = "Đang luân chuyển hàng";
-                            } else if (item.status == "delivering") {
-                              status = "Nhân viên đang giao cho người nhận";
-                            } else if (
-                              item.status == "money_collect_delivering"
-                            ) {
-                              status = "Nhân viên đang thu tiền người nhận";
-                            } else if (item.status == "delivered") {
-                              status = "Nhân viên đã giao hàng thành công";
-                            } else if (item.status == "delivery_fail") {
-                              status = "Nhân viên giao hàng thất bại";
-                            } else if (item.status == "waiting_to_return") {
-                              status = "Đang đợi trả hàng về cho người gửi";
-                            } else if (item.status == "return") {
-                              status = "Trả hàng";
-                            } else if (item.status == "return_transporting") {
-                              status = "Đang luân chuyển hàng trả";
-                            } else if (item.status == "return_sorting") {
-                              status = "Đang phân loại hàng trả";
-                            } else if (item.status == "returning") {
-                              status = "Nhân viên đang đi trả hàng";
-                            } else if (item.status == "return_fail") {
-                              status = "Nhân viên trả hàng thất bại";
-                            } else if (item.status == "returned") {
-                              status = "Nhân viên trả hàng thành công";
-                            } else if (item.status == "exception") {
-                              status =
-                                "Đơn hàng ngoại lệ không nằm trong quy trình";
-                            } else if (item.status == "damage") {
-                              status = "Hàng bị hư hỏng";
-                            } else if (item.status == "lost") {
-                              status = "Hàng bị mất";
-                            } else {
-                              status = item.status;
-                            }
-                            return (
-                              <div key={index++}>
-                                <p className="text-[#d53b3bcc]">
-                                  {/* {formatDateGHN(item?.updated_date).dateg +
+                        (item: any, index: number) => {
+                          let status = "";
+                          if (item.status == "ready_to_pick") {
+                            status = "Mới tạo đơn hàng";
+                          } else if (item.status == "picking") {
+                            status = "Nhân viên đang lấy hàng";
+                          } else if (item.status == "cancel") {
+                            status = "Hủy đơn hàng";
+                          } else if (item.status == "money_collect_picking") {
+                            status = "Đang thu tiền người gửi";
+                          } else if (item.status == "picked") {
+                            status = "Nhân viên đã lấy hàng";
+                          } else if (item.status == "storing") {
+                            status = "Hàng đang nằm ở kho";
+                          } else if (item.status == "transporting") {
+                            status = "Đang luân chuyển hàng";
+                          } else if (item.status == "delivering") {
+                            status = "Nhân viên đang giao cho người nhận";
+                          } else if (
+                            item.status == "money_collect_delivering"
+                          ) {
+                            status = "Nhân viên đang thu tiền người nhận";
+                          } else if (item.status == "delivered") {
+                            status = "Nhân viên đã giao hàng thành công";
+                          } else if (item.status == "delivery_fail") {
+                            status = "Nhân viên giao hàng thất bại";
+                          } else if (item.status == "waiting_to_return") {
+                            status = "Đang đợi trả hàng về cho người gửi";
+                          } else if (item.status == "return") {
+                            status = "Trả hàng";
+                          } else if (item.status == "return_transporting") {
+                            status = "Đang luân chuyển hàng trả";
+                          } else if (item.status == "return_sorting") {
+                            status = "Đang phân loại hàng trả";
+                          } else if (item.status == "returning") {
+                            status = "Nhân viên đang đi trả hàng";
+                          } else if (item.status == "return_fail") {
+                            status = "Nhân viên trả hàng thất bại";
+                          } else if (item.status == "returned") {
+                            status = "Nhân viên trả hàng thành công";
+                          } else if (item.status == "exception") {
+                            status =
+                              "Đơn hàng ngoại lệ không nằm trong quy trình";
+                          } else if (item.status == "damage") {
+                            status = "Hàng bị hư hỏng";
+                          } else if (item.status == "lost") {
+                            status = "Hàng bị mất";
+                          } else {
+                            status = item.status;
+                          }
+                          return (
+                            <div key={index++}>
+                              <p className="text-[#d53b3bcc]">
+                                {/* {formatDateGHN(item?.updated_date).dateg +
                                       "-" +
                                       formatDateGHN(item?.updated_date).hours} */}
-                                  {moment(item?.updated_date).format(
-                                    "DD [tháng] MM, YYYY[\r\n]HH Giờ mm [Phút]"
-                                  )}
-                                </p>
-                                <p className="text-[#26aa99] border-solid">
-                                  {status}
-                                </p>
-                              </div>
-                            );
-                          }
-                        )
+                                {moment(item?.updated_date).format(
+                                  "DD [tháng] MM, YYYY[\r\n]HH Giờ mm [Phút]"
+                                )}
+                              </p>
+                              <p className="text-[#26aa99] border-solid">
+                                {status}
+                              </p>
+                            </div>
+                          );
+                        }
+                      )
                       : currentstatus}
                   </td>
                   <td className="py-10  gap-8">
@@ -417,15 +419,15 @@ const CartUpdate = () => {
                           <option value={1}>Xác nhận</option>
                           <option value={2}>Huỷ đơn hàng</option>
                         </select>
-                        {order?.order?.payment_status == 0 ?  <>
+                        {order?.order?.payment_status == 0 ? <>
                           <h2 className="my-[10px]">Trạng thái thanh toán: </h2>
-                        <select
-                          {...register("payment_status")}
-                          className="max-w-[150px] my-[5px] py-[10px] border-[1px] border-[#333] rounded outline-none"
-                        >
-                          <option value={0}>Chưa thanh toán</option>
-                          <option value={1}>Đã thanh toán</option>
-                        </select></> : ""}
+                          <select
+                            {...register("payment_status")}
+                            className="max-w-[150px] my-[5px] py-[10px] border-[1px] border-[#333] rounded outline-none"
+                          >
+                            <option value={0}>Chưa thanh toán</option>
+                            <option value={1}>Đã thanh toán</option>
+                          </select></> : ""}
                         <button
                           className="max-w-[150px] bg-blue-300 py-[5px] !ml-0"
                           type="submit"

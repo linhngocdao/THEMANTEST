@@ -151,6 +151,8 @@ const CheckoutPage = () => {
     const info = {
       ...Receiver,
       ...data,
+      to_ward_code: provicei.to_ward_code,
+      to_district_id: provicei.to_district_id,
     };
     let product = [];
     product = carts?.carts?.products;
