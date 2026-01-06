@@ -1,0 +1,116 @@
+.content {
+  position: relative;
+  width: 100%;
+  padding: 20px;
+}
+.content header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 50px;
+  border-radius: 10px;
+}
+.content header .title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #191919;
+}
+.content header .btn {
+  display: inline-flex;
+  align-items: center;
+  background-color: #2410ff;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+}
+.content header .btn .io {
+  font-size: 20px;
+  margin-right: 10px;
+}
+.content header .btn:hover {
+  background-color: rgba(89, 74, 255, 1);
+}
+.content main {
+  position: relative;
+  min-height: 500px;
+  overflow: auto;
+  background: white;
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 20px;
+}
+.contents {
+  margin: 0px 20px;
+}
+.contents main {
+  position: relative;
+
+  overflow: auto;
+  background: white;
+  padding: 20px;
+  margin-top: 30px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 20px;
+}
+.content main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+header {
+  box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
+  border-collapse: collapse;
+}
+.content main table thead td {
+  font-weight: 600;
+}
+.content main table tr {
+  color: #222;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.content main table tr td {
+  padding: 10px;
+}
+.content main table tr td:last-child,
+.content main table tr td:nth-child(2) {
+  text-align: center;
+}
+.content main table tr:last-child {
+  border-bottom: none;
+}
+.content main table tr .action {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 20px;
+  transition: all 0.5s ease-in-out;
+}
+.content main table tr .action .info:hover {
+  color: #4907ff;
+  cursor: pointer;
+}
+.content main table tr .action .edit:hover {
+  color: #ffc107;
+  cursor: pointer;
+}
+.content main table tr .action .delete:hover {
+  color: #dc3545;
+  cursor: pointer;
+}
+@media (max-width: 991px) {
+  .content header {
+    padding: 10px;
+  }
+}
+@media (max-width: 480px) {
+  .content header {
+    padding: 10px;
+  }
+  .content header .title {
+    font-size: 20px;
+  }
+  .content header .btn {
+    padding: 8px;
+  }
+}

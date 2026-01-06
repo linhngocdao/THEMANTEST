@@ -1,0 +1,88 @@
+.categories {
+    padding: 0 80px;
+
+}
+.categories__title {
+    border-left: 5px solid black;
+    margin: 30px 0 30px 35px;
+}
+.categories__title h2 {
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-left: 20px;
+    font-size: 20px;
+}
+
+.slickArrow {
+    position: absolute;
+    top: 40%;
+    transform: translateY(50%);
+    border: none;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    transition: all 0.3s linear;
+    font-size: 20px;
+    background-color: white;
+    color: black;
+    z-index: 10;
+}
+.slickArrow.next {
+    right: 2%;
+}
+.slickArrow.prev {
+    left: 1%;
+}
+.slickArrow:hover {
+    background-color: blue;
+    color: white;
+}
+
+.categories__item {
+    margin-left: 40px;
+
+}
+.categories__item .item__box {
+    width:380px;
+    position: relative;
+    height: 450px;
+}
+.item__box img {
+    border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.item__box .overlay {
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    transition: all 0.3s linear
+}
+.item__box:hover .overlay {
+    opacity: 1;
+}
+
+.overlay span {
+    color: white;
+    padding: 5px 25px;
+    background: #000000;
+    border: 3px solid #FFFFFF;
+    border-radius: 50px;
+    transition: all 0.3s linear
+}
+.overlay span:hover {
+    background-color: blue;
+}

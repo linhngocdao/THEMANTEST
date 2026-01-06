@@ -1,0 +1,102 @@
+.center {
+  margin: auto;
+  margin-right: 200px;
+  height: 20%;
+}
+.main {
+  min-height: 0px !important;
+  padding: 10px 10px !important;
+}
+.react-datepicker__input-container {
+  border: 2px solid #e2e5e8;
+  border-radius: 10px;
+}
+.react-datepicker-wrapper {
+  width: unset !important;
+  display: inline-block !important;
+  margin-right: 12px;
+}
+.formDashboard button {
+  margin-left: 10px;
+}
+.formDashboard {
+  flex-grow: 1;
+}
+.react-datepicker-wrapper input {
+  padding: 4px;
+  width: 200px;
+}
+.formDashboard span {
+  padding-top: 5px;
+  padding-right: 5px;
+}
+.statiscar_quantity {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  justify-content: space-evenly;
+}
+.BiUser {
+  display: inline;
+  color: rgb(7, 244, 86);
+  font-size: 38px;
+  padding: 1px;
+  margin-top: 11px;
+  margin-left: 11px;
+}
+.BiUser_item {
+  width: 60px !important;
+  height: 60px !important;
+  background-color: rgb(206, 252, 197);
+  border-radius: 50%;
+}
+.BiUser_post {
+  width: 60px !important;
+  height: 60px !important;
+  background-color: rgb(252, 214, 195);
+  border-radius: 50%;
+}
+.Post {
+  display: inline;
+  color: rgb(248, 93, 46);
+  font-size: 38px;
+  padding: 1px;
+  margin-top: 11px;
+  margin-left: 11px;
+}
+
+.product {
+  display: inline;
+  color: rgb(75, 104, 237);
+  font-size: 38px;
+  padding: 1px;
+  margin-top: 11px;
+  margin-left: 11px;
+}
+.BiUser_product {
+  width: 60px !important;
+  height: 60px !important;
+  background-color: rgb(136, 201, 238);
+  border-radius: 50%;
+}
+
+.order {
+  display: inline;
+  color: rgb(245, 65, 227);
+  font-size: 38px;
+  padding: 1px;
+  margin-top: 11px;
+  margin-left: 11px;
+}
+.BiUser_order {
+  width: 60px !important;
+  height: 60px !important;
+  background-color: rgb(248, 197, 244);
+  border-radius: 50%;
+}
+.overview {
+  background-color: rgb(226, 226, 226) !important;
+  border-radius: 5px;
+}
+.statis {
+  background-color: rgb(226, 226, 226) !important;
+}

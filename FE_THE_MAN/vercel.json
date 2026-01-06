@@ -1,0 +1,28 @@
+{
+    "routes": [
+        {
+            "src": "/",
+            "dest": "/"
+        },
+        {
+            "src": "/admin",
+            "dest": "/"
+        },
+        {
+            "src": "/signin",
+            "dest": "/"
+        },
+        {
+            "src": "/signup",
+            "dest": "/"
+        },
+        {
+            "src": "/assets",
+            "dest": "/"
+        },
+        {
+            "src": "/(.*\\.(js|css|png|jpg|gif|svg|woff2?|eot|ttf|otf))$",
+            "dest": "/$1"
+          }
+    ]
+}

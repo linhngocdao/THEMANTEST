@@ -1,0 +1,40 @@
+{
+  "name": "be_datn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js --exec babel-node -e js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "nodemon": "^2.0.20",
+    "sort-object": "^3.0.3"
+  },
+  "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.10",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.1",
+    "caniuse-lite": "^1.0.30001439",
+    "common": "^0.2.5",
+    "config": "^3.3.8",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "express-jwt": "^7.7.5",
+    "jade": "^1.9.2",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.4",
+    "mongoose": "^6.6.1",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.8.0",
+    "path": "^0.12.7",
+    "serve-favicon": "^2.5.0"
+  }
+}

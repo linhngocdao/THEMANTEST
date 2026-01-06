@@ -1,0 +1,134 @@
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 50px 80px 50px 100px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+}
+
+.title h1 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.title span {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  position: relative;
+  display: flex;
+}
+
+.searchInput input {
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+  outline: none;
+  box-shadow: none;
+  width: 450px;
+  min-height: 40px;
+  padding: 0 20px;
+  transition: all 0.3s linear;
+}
+.searchInput input:focus {
+  border: 1px solid #979797;
+}
+
+.searchInput .icSearch {
+  min-height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 20px;
+  background-color: rgb(96 165 250);
+  font-size: 15px;
+  color: white;
+  transition: all 0.3s linear;
+}
+
+.searchInput .icSearch:hover {
+  background-color: rgb(0, 41, 92);
+}
+
+.rowProduct {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  padding: 30px 0;
+}
+/*.itemProduct:hover img {*/
+/*  display: none;*/
+/*}*/
+/*.itemProduct:hover .subImg {*/
+/*  display: block;*/
+/*}*/
+/*.itemProduct .subImg {*/
+/*  display: none;*/
+/*}*/
+
+.imgProduct {
+  position: relative;
+}
+
+.color {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 100;
+  display: flex;
+  gap: 10px;
+}
+
+.color .item_color {
+  width: 15px;
+  height: 15px;
+  border: 1px solid black;
+}
+
+.itemProduct h3 {
+  font-size: 15px;
+  font-weight: bold;
+  padding: 10px 0;
+  transition: all 0.2s linear;
+}
+.itemProduct:hover h3 {
+  color: #1890ff;
+}
+.itemProduct span {
+  color: #b70000;
+  font-weight: 700;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0;
+  gap: 30px;
+}
+
+.pagination .arrows {
+  font-size: 25px;
+  color: #999999;
+  cursor: pointer;
+  transition: all 0.3s linear;
+}
+.pagination .arrows:hover {
+  color: #1890ff;
+}
+.pagination span {
+  color: #999999;
+  font-weight: bold;
+  cursor: pointer;
+}
+.pagination span:hover {
+  color: #000;
+}
+.pagination span.active {
+  color: #000;
+}

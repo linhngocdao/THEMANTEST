@@ -1,0 +1,36 @@
+.banner:hover .slick-arrow {
+    opacity: 100;
+}
+.slick-arrow {
+    position: absolute;
+    top: 40%;
+    transform: translateY(50%);
+    border: none;
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    transition: all 0.3s linear;
+    font-size: 20px;
+    background-color: white;
+    color: black;
+    opacity: 0;
+    z-index: 10;
+}
+.slick-arrow.next {
+    right: 6%;
+}
+.slick-arrow.prev {
+    left: 6%;
+}
+.slick-arrow:hover {
+    background-color: rgb(43, 43, 71);
+    color: white;
+}
+
+.slick-dots {
+    bottom: 10px !important;
+}
+.slide_img img{width: 100px; height: 80px}
