@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react'
 import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
 import NumberFormat from 'react-number-format';
 import { useSelector } from 'react-redux';
@@ -7,6 +6,7 @@ import Slider from 'react-slick';
 import { getProducts } from '../../redux/slices/productSlice';
 import { RootState, useAppDispatch } from '../../redux/store';
 import styles from './NewProduct.module.css';
+import { useEffect } from 'react';
 
 type Props = {}
 function SampleNextArrow(props: { onClick: () => void; }) {
@@ -32,11 +32,14 @@ const NewProduct = (props: Props) => {
       })
     );
   }, [dispatch, 1]);
+  const productList = product?.products?.Product || [];
+  const productCount = productList.length;
+
   const settings = {
-    arrows: true,
-    infinite: true,
+    arrows: productCount > 4, // Chỉ hiển thị arrows khi có nhiều hơn 4 sản phẩm
+    infinite: productCount > 4, // Tắt infinite khi số sản phẩm ít hơn slidesToShow
     speed: 600,
-    slidesToShow: 4,
+    slidesToShow: Math.min(4, productCount), // Không hiển thị nhiều hơn số sản phẩm có
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow onClick={() => { }} />,
     prevArrow: <SamplePrevArrow onClick={() => { }} />,
@@ -62,12 +65,12 @@ const NewProduct = (props: Props) => {
                     </Link>
 
                     <span> <NumberFormat
-                    value={item?.price}
-                    displayType={"text"}
-                    thousandSeparator={true}
-                    prefix={""}
-                  />{" "}
-                   VNĐ</span>
+                      value={item?.price}
+                      displayType={"text"}
+                      thousandSeparator={true}
+                      prefix={""}
+                    />{" "}
+                      VNĐ</span>
                   </div>
                 </div>
 
