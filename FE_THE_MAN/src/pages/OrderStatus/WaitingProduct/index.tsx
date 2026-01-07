@@ -22,12 +22,8 @@ const WaittingProduct = () => {
       const orafter = or?.payload?.filter((item: any) => item.userID == user?.payload?.users?.id && item.order_code != null)
       for (let i = 0; i < orafter.length; i++) {
 
-        let orderId: any = {
-          order_code: orafter[i].order_code
-        }
-        // console.log(orderId);
-
-        const order = await dispatch(infoOrder(orderId || ''))
+        const orderCode = orafter[i].order_code || '';
+        const order = await dispatch(infoOrder(orderCode))
         if (order?.payload?.data?.status == "ready_to_pick") {
 
           ord.push(...Orders, orafter[i])

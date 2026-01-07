@@ -61,7 +61,7 @@ export const infoOrder = createAsyncThunk(
     try {
       const res = await axios.post(
         "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail",
-        { order_code: orderCode },
+        {order_code: orderCode},
         {
           headers: {
             "Content-Type": "application/json",
@@ -106,33 +106,12 @@ export const readOrder = createAsyncThunk(
 );
 export const isBuy = createAsyncThunk("orders/isBuy", async (id: any) => {
   const resp = await readOrdertApi(id);
-  if (resp.data.order_code) {
-    console.log(id);
 
-    console.log(resp);
+  // Check if order is confirmed by admin (status=1) and paid (payment_status=1)
+  if (resp.data.status === 1 && resp.data.payment_status === 1) {
+    return true;
   }
-
-  if (resp.data.order_code) {
-    const { data } = await axios.post(
-      "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail",
-      {
-        order_code: resp.data.order_code,
-        // order_code: "LLU7GH",
-      },
-      {
-        headers: {
-          Token: GHN_TOKEN,
-        },
-      }
-    );
-    console.log(data?.data?.status);
-
-    if (data?.data?.status === "delivered") {
-      return true;
-    }
-    return false;
-    // console.log(data);
-  }
+  return false;
 });
 export const updateOrder = createAsyncThunk(
   "orders/updateorder",

@@ -1,14 +1,11 @@
-import axios from "axios";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { HiOutlineCheck, HiOutlineX, HiRefresh } from "react-icons/hi";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { HiRefresh } from "react-icons/hi";
 import NumberFormat from "react-number-format";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { infoOrder, readOrder } from "../../redux/slices/orderSlice";
-import { formatDateGHN } from "../../ultis";
 
 const CartUpdate = () => {
   const dispatch = useDispatch<any>();
@@ -72,10 +69,8 @@ const CartUpdate = () => {
     (async () => {
       const carts = await dispatch(readOrder(id!));
       reset(carts?.payload);
-      let orderId: any = {
-        order_code: carts?.payload?.order_code,
-      };
-      dispatch(infoOrder(orderId || ""));
+      const orderCode = carts?.payload?.order_code || "";
+      dispatch(infoOrder(orderCode));
     })();
   }, [id, dispatch]);
 
@@ -122,7 +117,7 @@ const CartUpdate = () => {
                   <th className="font-semibold pb-10">Tiền hàng</th>
                   <th className="font-semibold pb-10">Tổng tiền</th>
                   <th className="font-semibold pb-10">Trạng thái thanh toán</th>
-                  
+
                 </tr>
               </thead>
               <tbody className="w-full">
@@ -145,70 +140,70 @@ const CartUpdate = () => {
                   <td className=" py-10  gap-8">
                     {order?.orderinfo?.data?.log
                       ? order?.orderinfo?.data?.log?.map(
-                          (item: any, index: number) => {
-                            let status = "";
-                            if (item.status == "ready_to_pick") {
-                              status = "Mới tạo đơn hàng";
-                            } else if (item.status == "picking") {
-                              status = "Nhân viên đang lấy hàng";
-                            } else if (item.status == "cancel") {
-                              status = "Hủy đơn hàng";
-                            } else if (item.status == "money_collect_picking") {
-                              status = "Đang thu tiền người gửi";
-                            } else if (item.status == "picked") {
-                              status = "Nhân viên đã lấy hàng";
-                            } else if (item.status == "storing") {
-                              status = "Hàng đang nằm ở kho";
-                            } else if (item.status == "transporting") {
-                              status = "Đang luân chuyển hàng";
-                            } else if (item.status == "delivering") {
-                              status = "Nhân viên đang giao cho người nhận";
-                            } else if (
-                              item.status == "money_collect_delivering"
-                            ) {
-                              status = "Nhân viên đang thu tiền người nhận";
-                            } else if (item.status == "delivered") {
-                              status = "Nhân viên đã giao hàng thành công";
-                            } else if (item.status == "delivery_fail") {
-                              status = "Nhân viên giao hàng thất bại";
-                            } else if (item.status == "waiting_to_return") {
-                              status = "Đang đợi trả hàng về cho người gửi";
-                            } else if (item.status == "return") {
-                              status = "Trả hàng";
-                            } else if (item.status == "return_transporting") {
-                              status = "Đang luân chuyển hàng trả";
-                            } else if (item.status == "return_sorting") {
-                              status = "Đang phân loại hàng trả";
-                            } else if (item.status == "returning") {
-                              status = "Nhân viên đang đi trả hàng";
-                            } else if (item.status == "return_fail") {
-                              status = "Nhân viên trả hàng thất bại";
-                            } else if (item.status == "returned") {
-                              status = "Nhân viên trả hàng thành công";
-                            } else if (item.status == "exception") {
-                              status =
-                                "Đơn hàng ngoại lệ không nằm trong quy trình";
-                            } else if (item.status == "damage") {
-                              status = "Hàng bị hư hỏng";
-                            } else if (item.status == "lost") {
-                              status = "Hàng bị mất";
-                            } else {
-                              status = item.status;
-                            }
-                            return (
-                              <div key={index++}>
-                                <p className="text-[#d53b3bcc]">
-                                  {moment(item?.updated_date).format(
-                                    "DD [tháng] MM, YYYY[\r\n]HH Giờ mm [Phút]"
-                                  )}
-                                </p>
-                                <p className="text-[#26aa99] border-solid">
-                                  {status}
-                                </p>
-                              </div>
-                            );
+                        (item: any, index: number) => {
+                          let status = "";
+                          if (item.status == "ready_to_pick") {
+                            status = "Mới tạo đơn hàng";
+                          } else if (item.status == "picking") {
+                            status = "Nhân viên đang lấy hàng";
+                          } else if (item.status == "cancel") {
+                            status = "Hủy đơn hàng";
+                          } else if (item.status == "money_collect_picking") {
+                            status = "Đang thu tiền người gửi";
+                          } else if (item.status == "picked") {
+                            status = "Nhân viên đã lấy hàng";
+                          } else if (item.status == "storing") {
+                            status = "Hàng đang nằm ở kho";
+                          } else if (item.status == "transporting") {
+                            status = "Đang luân chuyển hàng";
+                          } else if (item.status == "delivering") {
+                            status = "Nhân viên đang giao cho người nhận";
+                          } else if (
+                            item.status == "money_collect_delivering"
+                          ) {
+                            status = "Nhân viên đang thu tiền người nhận";
+                          } else if (item.status == "delivered") {
+                            status = "Nhân viên đã giao hàng thành công";
+                          } else if (item.status == "delivery_fail") {
+                            status = "Nhân viên giao hàng thất bại";
+                          } else if (item.status == "waiting_to_return") {
+                            status = "Đang đợi trả hàng về cho người gửi";
+                          } else if (item.status == "return") {
+                            status = "Trả hàng";
+                          } else if (item.status == "return_transporting") {
+                            status = "Đang luân chuyển hàng trả";
+                          } else if (item.status == "return_sorting") {
+                            status = "Đang phân loại hàng trả";
+                          } else if (item.status == "returning") {
+                            status = "Nhân viên đang đi trả hàng";
+                          } else if (item.status == "return_fail") {
+                            status = "Nhân viên trả hàng thất bại";
+                          } else if (item.status == "returned") {
+                            status = "Nhân viên trả hàng thành công";
+                          } else if (item.status == "exception") {
+                            status =
+                              "Đơn hàng ngoại lệ không nằm trong quy trình";
+                          } else if (item.status == "damage") {
+                            status = "Hàng bị hư hỏng";
+                          } else if (item.status == "lost") {
+                            status = "Hàng bị mất";
+                          } else {
+                            status = item.status;
                           }
-                        )
+                          return (
+                            <div key={index++}>
+                              <p className="text-[#d53b3bcc]">
+                                {moment(item?.updated_date).format(
+                                  "DD [tháng] MM, YYYY[\r\n]HH Giờ mm [Phút]"
+                                )}
+                              </p>
+                              <p className="text-[#26aa99] border-solid">
+                                {status}
+                              </p>
+                            </div>
+                          );
+                        }
+                      )
                       : currentstatus}
                   </td>
                   <td className="py-10  gap-8">
@@ -328,8 +323,8 @@ const CartUpdate = () => {
                         VNĐ{" "}
                       </td>
                       <td>
-                        <button className="bg-red-500 text-white rounded-md p-[5px] font-semibold" onClick={() => navigate(`/detail/`+item._id)}>
-                           Mua lại
+                        <button className="bg-red-500 text-white rounded-md p-[5px] font-semibold" onClick={() => navigate(`/detail/` + item._id)}>
+                          Mua lại
                         </button>
                       </td>
                     </tr>
