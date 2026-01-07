@@ -1,21 +1,13 @@
-import { Modal } from "antd";
-import React, { useEffect, useState } from "react";
 import {
   AiOutlineClose,
-  AiOutlineDelete,
-  AiOutlineEdit,
-  AiOutlineHome,
+  AiOutlineDelete, AiOutlineHome,
   AiOutlineInfoCircle,
   AiOutlineMail,
   AiOutlineMessage,
   AiOutlinePhone,
-  AiOutlineUser,
+  AiOutlineUser
 } from "react-icons/ai";
-import { TiPlus } from "react-icons/ti";
-import NumberFormat from "react-number-format";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import {
   deleteContact,
@@ -25,6 +17,7 @@ import {
 import { RootState } from "../../../../redux/store";
 
 import styles from "./Contact.module.css";
+import { useEffect, useState } from "react";
 
 type Props = {};
 

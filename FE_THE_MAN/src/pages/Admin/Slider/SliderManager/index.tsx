@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { TiPlus } from "react-icons/ti";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { useAppDispatch } from "../../../../redux/store";
 import { RootState } from "../../../../redux/store";
-import ReactPaginate from "react-paginate";
 import "../../../../styleAntd/panigation.css";
-import Swal from "sweetalert2";
 import styles from "../../Products/ProductManager/ProductManager.module.css";
-import { getAll } from "../../../../api-cilent/Post";
-import { Pagination } from "antd";
+import { Modal, Pagination, message } from "antd";
 import {
   deleteSlider,
   getSliders,
@@ -36,25 +33,22 @@ const SliderManager = (props: Props) => {
   }, [dispatch, pages]);
 
   const handremove = (id: any) => {
-    Swal.fire({
+    Modal.confirm({
       title: "Bạn có chắc chắn muốn xóa không?",
-      text: "Không thể hoàn tác sau khi xóa",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+      content: "Không thể hoàn tác sau khi xóa",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      async onOk() {
         await dispatch(deleteSlider(id));
-        Swal.fire("Thành công!", "Xóa thành công.", "success");
+        message.success("Xóa thành công!");
         dispatch(
           getSliders({
             page: pages,
             limit: 10,
           })
         );
-      }
+      },
     });
   };
 
