@@ -1,16 +1,16 @@
-import express from 'express'
+import express from 'express';
 import moment from 'moment/moment';
-import config from 'config'
-import VnPay from '../models/vnpay'
+import config from 'config';
+import VnPay from '../models/vnpay';
 import Order from "../models/orders";
 const router = express.Router()
 
-router.post('/create_payment_url', async function (req, res, next) {
+router.post('/create_payment_url', async function (req, res) {
     var ipAddr = req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
-    
+
     var tmnCode = config.get('vnp_TmnCode');
     var secretKey = config.get('vnp_HashSecret');
     var vnpUrl = config.get('vnp_Url');
@@ -49,22 +49,22 @@ router.post('/create_payment_url', async function (req, res, next) {
     vnp_Params = sortObject(vnp_Params);
     var querystring = require('qs');
     var signData = querystring.stringify(vnp_Params, { encode: false });
-    var crypto = require("crypto");     
+    var crypto = require("crypto");
     var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex"); 
+    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     vnp_Params['vnp_SecureHash'] = signed;
     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
     res.json({
-        code: 200, 
+        code: 200,
         vnpUrl
     })
 });
 
-router.get('/vnpay_return', async function (req, res, next) {
+router.get('/vnpay_return', async function (req, res) {
     var vnp_Params = req.query;
     var secureHash = vnp_Params['vnp_SecureHash'];
-    const exitsTMCODE = await VnPay.findOne({vnp_TxnRef: vnp_Params.vnp_TxnRef}).exec() 
-    const exitsOrder = await Order.findOne({tm_codeorder: vnp_Params.vnp_TxnRef}).exec() 
+    const exitsTMCODE = await VnPay.findOne({vnp_TxnRef: vnp_Params.vnp_TxnRef}).exec()
+    const exitsOrder = await Order.findOne({tm_codeorder: vnp_Params.vnp_TxnRef}).exec()
     if(exitsTMCODE) {
                 await VnPay.findOneAndUpdate({vnp_TxnRef: vnp_Params.vnp_TxnRef}, vnp_Params)
     }else {
@@ -75,18 +75,17 @@ router.get('/vnpay_return', async function (req, res, next) {
 
     vnp_Params = sortObject(vnp_Params);
 
-    
-    var tmnCode = config.get('vnp_TmnCode');
+
     var secretKey = config.get('vnp_HashSecret');
-    var url2 = config.get('vnp_ReturnUrl2');   
+    var url2 = config.get('vnp_ReturnUrl2');
     var querystring = require('qs');
     var signData = querystring.stringify(vnp_Params, { encode: false });
-    var crypto = require("crypto");     
+    var crypto = require("crypto");
     var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
+    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     if(secureHash === signed){
         //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
-            
+
             const result = {
                 code: "",
                 message: ""
@@ -143,7 +142,7 @@ router.get('/vnpay_return', async function (req, res, next) {
                 result.code = vnp_Params['vnp_ResponseCode']
                 result.message = "Các lỗi khác (lỗi còn lại, không có trong danh sách mã lỗi đã liệt kê)"
             }
-            
+
             res.redirect(url2)
           //  res.json(result)
     } else{

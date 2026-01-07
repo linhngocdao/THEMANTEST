@@ -8,7 +8,6 @@ import {
 } from "../../api-cilent/Cart";
 import { AddOrderApi, countProductApi, UpdateQuantityCart } from "../../api-cilent/Orders";
 import { get } from "../../api-cilent/Product";
-import { checkVoucherApi } from "../../api-cilent/Voucher";
 
 interface Icart {
   cart: {};
@@ -110,11 +109,11 @@ export const Decrement = createAsyncThunk(
 
 
 
-export const updateCartRd = createAsyncThunk("carts/updatecart", async (data:any) => {
-      const res = await updateCart(data)
-      console.log("res",res);
-      return res.data
-      
+export const updateCartRd = createAsyncThunk("carts/updatecart", async (data: any) => {
+  const res = await updateCart(data)
+  console.log("res", res);
+  return res.data
+
 })
 
 export const RemoveCart = createAsyncThunk(
@@ -127,14 +126,14 @@ export const RemoveCart = createAsyncThunk(
         item.color == product.color &&
         item.size == product.size
     );
-    
-      const confirm = window.confirm("Bạn có muốn xoá không?");
-      if (confirm) {
-        const cartnewa = data.products.filter((item: any) => item !== cartnew);
-        data.products = cartnewa;
-        toast.info("Xoá thành công?");
-      }
-     
+
+    const confirm = window.confirm("Bạn có muốn xoá không?");
+    if (confirm) {
+      const cartnewa = data.products.filter((item: any) => item !== cartnew);
+      data.products = cartnewa;
+      toast.info("Xoá thành công?");
+    }
+
     return data;
   }
 );
@@ -143,8 +142,8 @@ export const RemoveCart = createAsyncThunk(
 export const addToCart = createAsyncThunk(
   "carts/addtocart",
   async (carts: any) => {
-    console.log("ccc",carts);
-    
+    console.log("ccc", carts);
+
     const { data } = await readcart(carts.userID);
     let cart = {
       products: [],
@@ -185,12 +184,12 @@ export const addToCart = createAsyncThunk(
       cart.userID = carts.userID;
       cart.tm_codeorder = carts.tm_codeorder
       const res = await addcart(cart);
-      if(res?.data?.code == 409) {
-          return {
-            code: 409
-          }
+      if (res?.data?.code == 409) {
+        return {
+          code: 409
+        }
       }
-      
+
     }
     return cart;
   }
@@ -199,45 +198,37 @@ export const addOrder = createAsyncThunk(
   "Users/addorder",
   async (data: any) => {
     let error = 0;
-   
+
+    for (let index = 0; index < data.product?.length; index++) {
+      const element = data.product[index];
+
+      const res = await countProductApi(element);
+      if (res?.data?.code == 503) {
+        error++;
+        toast.error(res?.data?.message);
+      }
+    }
+
+    if (error < 1) {
+      const response = await AddOrderApi(data);
+      const remove = await removeCart(data?._id);
       for (let index = 0; index < data.product?.length; index++) {
         const element = data.product[index];
-
-        const res = await countProductApi(element);
-        if (res?.data?.code == 503) {
-          error++;
-          toast.error(res?.data?.message);
-        }
+        const res = await UpdateQuantityCart(element);
       }
-
-      if (error < 1) {
-        const response = await AddOrderApi(data);
-        const remove = await removeCart(data?._id);
-        for (let index = 0; index < data.product?.length; index++) {
-          const element = data.product[index];
-          const res = await UpdateQuantityCart(element);
-        }
-        if(data?.voucher) {
-          const raw = {
-            update:true,
-            _id: data?.voucher,
-            iduser: data?.userID
-          }
-          await checkVoucherApi(raw)
-        }
-        return {
-          code: 200, 
-          message: "Success"
-        }
-      } else {
-        return {
-            code: 503,
-            message: "Fail"
-        }
+      return {
+        code: 200,
+        message: "Success"
       }
+    } else {
+      return {
+        code: 503,
+        message: "Fail"
+      }
+    }
 
-   
-    
+
+
   }
 );
 const cartSlice = createSlice({
@@ -273,19 +264,19 @@ const cartSlice = createSlice({
           removeCart(payload._id);
         }
       }),
-      
+
       build.addCase(addOrder.fulfilled, (state, { payload }) => {
-        
-        
-          if(payload?.code == 200) { 
-            state.carts = {}
-          }
+
+
+        if (payload?.code == 200) {
+          state.carts = {}
+        }
       }),
       build.addCase(updateCartRd.fulfilled, (state, { payload }) => {
         console.log("payload,", payload);
-        
+
         state.carts = payload
-    })
+      })
   },
 });
 export default cartSlice.reducer;

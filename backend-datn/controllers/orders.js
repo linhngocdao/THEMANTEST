@@ -1,4 +1,5 @@
 import Order from "../models/orders";
+import Discount from "../models/discount";
 
 export const addNewOrder = async (req, res) => {
   try {
@@ -10,11 +11,23 @@ export const addNewOrder = async (req, res) => {
 };
 export const editOrder = async (req, res) => {
   try {
+    const currentOrder = await Order.findById({ _id: req.params.id }).exec();
     const cart = await Order.findByIdAndUpdate(
       { _id: req.params.id },
       req.body,
       { returnDocument: "after" }
     ).exec();
+
+    // Update voucher count when order status changes from 0 to 1 (confirmed by admin)
+    if (currentOrder && currentOrder.status === 0 && req.body.status === 1) {
+      if (currentOrder.voucher) {
+        await Discount.findByIdAndUpdate(
+          currentOrder.voucher,
+          { $inc: { numberoftimesused: 1 } }
+        ).exec();
+      }
+    }
+
     res.json(cart);
   } catch (error) {
     res.status(400).json({ message: error });
@@ -45,7 +58,7 @@ export const searchOrder = async (req, res) => {
     res.json(order);
   } catch (error) {}
 };
-export const listOrder = async (req, res) => {
+export const listOrder = async (_req, res) => {
   try {
     const cart = await Order.find()
       .sort({
