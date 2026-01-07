@@ -1,7 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { HiOutlineCheck, HiOutlineX, HiRefresh } from "react-icons/hi";
+import { HiOutlineCheck, HiRefresh } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,7 +13,7 @@ import { useAppDispatch } from "../../../../redux/store";
 
 type Inputs = {
   name: string;
-  image: string;
+  image: string | FileList;
   status: string;
 };
 
@@ -28,20 +28,26 @@ const CateProductEdit = () => {
     formState: { errors },
     reset,
   } = useForm<Inputs>();
-const categoryproduct = useSelector((state:any)=>state.catePro?.cateproduct?.data?.Cateproduct)
+  const categoryproduct = useSelector((state: any) => state.catePro?.cateproduct?.data?.Cateproduct)
   const onSubmit: SubmitHandler<Inputs> = async (values: Inputs) => {
     try {
-      const apiUrl = "https://api.cloudinary.com/v1_1/dmlv9tzte/image/upload";
-      const images = values.image[0];
-      const formdata = new FormData();
-      formdata.append("file", images);
-      formdata.append("upload_preset", "duanTn");
-      const { data } = await axios.post(apiUrl, formdata, {
-        headers: {
-          "Content-type": "application/form-data",
-        },
-      });
-      await dispatch(updateCatePro({ ...values, image: data.url })).unwrap();
+      let imageUrl = categoryproduct?.image;
+
+      if (typeof values.image !== 'string' && values.image && values.image.length > 0) {
+        const apiUrl = "https://api.cloudinary.com/v1_1/dmlv9tzte/image/upload";
+        const images = values.image[0];
+        const formdata = new FormData();
+        formdata.append("file", images);
+        formdata.append("upload_preset", "duanTn");
+        const { data } = await axios.post(apiUrl, formdata, {
+          headers: {
+            "Content-type": "application/form-data",
+          },
+        });
+        imageUrl = data.url;
+      }
+
+      await dispatch(updateCatePro({ ...values, image: imageUrl })).unwrap();
       toast.success("Cập nhật  danh mục thành công !", {
         position: "top-right",
         autoClose: 5000,
@@ -52,12 +58,12 @@ const categoryproduct = useSelector((state:any)=>state.catePro?.cateproduct?.dat
         progress: undefined,
       });
       navigate("/admin/category_product");
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(() => {
     (async () => {
-    await dispatch(readCatePro(id));
-     
+      await dispatch(readCatePro(id));
+
     })();
   }, [id, dispatch, reset]);
   useEffect(() => {
@@ -113,11 +119,11 @@ const categoryproduct = useSelector((state:any)=>state.catePro?.cateproduct?.dat
                     </div>
                   </div>
                   <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700">
                       Hình ảnh hiện tại
                     </label>
-                  <img className='w-32' src={preview ? preview : categoryproduct?.image} alt="" />
- 
+                    <img className='w-32' src={preview ? preview : categoryproduct?.image} alt="" />
+
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -141,9 +147,7 @@ const categoryproduct = useSelector((state:any)=>state.catePro?.cateproduct?.dat
                         </svg>
                         <div className="flex text-sm text-gray-600">
                           <input
-                            {...register("image", {
-                              required: "Vui lòng chọn ảnh",
-                            })}
+                            {...register("image")}
                             onChange={(e: any) => {
                               setPreview(
                                 URL.createObjectURL(e.target.files[0])
