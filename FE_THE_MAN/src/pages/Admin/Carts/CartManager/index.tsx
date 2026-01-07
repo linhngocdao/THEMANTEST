@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
-import { TiPlus } from "react-icons/ti";
 import NumberFormat from "react-number-format";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
+import { Modal, message } from "antd";
 import CartLoad from "../../../../components/CartLoad";
-import {
-  deleteCatePost,
-  getAllCatePosts,
-} from "../../../../redux/slices/catePostSlice";
 import {
   getOrders,
   removeOrder,
   searchOrder,
 } from "../../../../redux/slices/orderSlice";
-import { formatCurrency } from "../../../../ultis";
 import styles from "./Cart.module.css";
 
 type Props = {};
@@ -26,13 +19,17 @@ const CartPostManager = () => {
   const order = useSelector((state: any) => state.orders);
   const [Loading, setLoading] = useState(false);
   const onDelete = async (id: any) => {
-    const confirm = window.confirm(
-      "Bạn có chắc chắc muốn xoá đơn hàng này không?"
-    );
-    if (confirm) {
-      await dispatch(removeOrder(id));
-      toast.success("Xoá đơn hàng thành công");
-    }
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn xóa đơn hàng này không?",
+      content: "Không thể hoàn tác sau khi xóa",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      async onOk() {
+        await dispatch(removeOrder(id));
+        message.success("Xoá đơn hàng thành công");
+      },
+    });
   };
   const onSearch = (e: any) => {
     dispatch(searchOrder(e.target.value));

@@ -1,18 +1,17 @@
 import moment from "moment";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { TiPlus } from "react-icons/ti";
 import NumberFormat from "react-number-format";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
+import { Modal, message } from "antd";
 import {
   getVouchers,
   removeVoucherData,
 } from "../../../redux/slices/voucherSlice";
 import styles from "./CatePostManager.module.css";
 
-type Props = {};
 
 const VoucherManager = () => {
   const vouchers = useSelector((state: any) => state.voucher);
@@ -26,23 +25,20 @@ const VoucherManager = () => {
     })();
   }, []);
   const handremove = (id: any) => {
-    Swal.fire({
+    Modal.confirm({
       title: "Bạn có chắc chắn muốn xóa không?",
-      text: "Không thể hoàn tác sau khi xóa",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+      content: "Không thể hoàn tác sau khi xóa",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      async onOk() {
         const res = await dispatch(removeVoucherData(id));
         if (res?.payload?.result == 200) {
-          Swal.fire("Thành công!", "Xóa thành công.", "success");
+          message.success("Xóa thành công!");
         } else {
-          Swal.fire("Lỗi!", "Lỗi gì đó.", "error");
+          message.error("Lỗi gì đó.");
         }
-      }
+      },
     });
   };
 
@@ -112,7 +108,7 @@ const VoucherManager = () => {
                   <td>{item?.timeuser} ngày</td>
                   <td className="text-center">
                     {item?.numberofuses <= item?.numberoftimesused ||
-                    moment(item?.endtime).unix() <= moment().unix() ? (
+                      moment(item?.endtime).unix() <= moment().unix() ? (
                       <p className="text-xs inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline font-bold bg-green-500 text-white rounded-full">
                         Ngừng hoạt động
                       </p>
