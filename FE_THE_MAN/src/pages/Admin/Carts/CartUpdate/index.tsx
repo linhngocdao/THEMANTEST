@@ -11,6 +11,7 @@ import {
   infoOrder,
   orderConfirm,
   readOrder,
+  SHOP_ID,
   updateOrder,
 } from "../../../../redux/slices/orderSlice";
 import { formatCurrency } from "../../../../ultis";
@@ -29,6 +30,7 @@ const CartUpdate = () => {
   const voucher = useSelector((state: any) => state.voucher);
   let sum = 0;
   const onUpdate = async (data: any) => {
+    data._id = id;
     data.payment_status = parseInt(data.payment_status);
     data.status = parseInt(data.status);
 
@@ -76,7 +78,7 @@ const CartUpdate = () => {
 
     // Payload đơn giản theo format GHN
     const infocart = {
-      shop_id: 120366,
+      shop_id: SHOP_ID,
       payment_type_id: payment_type_id,
       to_name: infomation?.fullname,
       to_phone: infomation?.phonenumber,

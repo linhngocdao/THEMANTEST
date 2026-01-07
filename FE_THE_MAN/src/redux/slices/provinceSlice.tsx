@@ -2,8 +2,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export const GHN_TOKEN = 'c26fbc83-124e-11ed-b136-06951b6b7f89'
-export const SHOP_ID = 198260
+// export const GHN_TOKEN = 'c26fbc83-124e-11ed-b136-06951b6b7f89'
+// export const SHOP_ID = 198260
+
+export const GHN_TOKEN = 'ac23f1a8-eae8-11f0-a3d6-dac90fb956b5'
+export const SHOP_ID = 198976
 
 type Province = {
   province: [],
@@ -114,10 +117,10 @@ const provinceSlice = createSlice({
       state.ward = []
       state.ward = payload as any;
     });
-    builder.addCase(getSevicePackage.fulfilled, (state) => {
+    builder.addCase(getSevicePackage.fulfilled, () => {
 
     });
-    builder.addCase(getFee.fulfilled, (state) => {
+    builder.addCase(getFee.fulfilled, () => {
 
     });
   },
