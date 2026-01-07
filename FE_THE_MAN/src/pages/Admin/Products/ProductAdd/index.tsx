@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlineX, HiOutlineCheck } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
@@ -38,8 +38,8 @@ const ProductAdd = () => {
   const categories = useSelector(
     (state: any) => state.catePro.cateproducts
   );
-  console.log("Product0",categories);
-  
+  console.log("Product0", categories);
+
   const [preview, setPreview] = useState<string>();
   const [previews, setPreviews] = useState<Iimgs[]>([]);
   const dispatch = useDispatch<any>();
@@ -103,6 +103,20 @@ const ProductAdd = () => {
 
         imgs.push(data.url);
       }
+      // Consolidate duplicate types
+      const uniqueTypes = Object.values(
+        values.type.reduce((acc: any, curr: any) => {
+          const key = `${curr.color}-${curr.size}`;
+          if (acc[key]) {
+            acc[key].quantity = Number(acc[key].quantity) + Number(curr.quantity);
+          } else {
+            acc[key] = { ...curr, quantity: Number(curr.quantity) };
+          }
+          return acc;
+        }, {})
+      );
+      values.type = uniqueTypes as IType[];
+
       const product = {
         ...values,
         image: data.url,

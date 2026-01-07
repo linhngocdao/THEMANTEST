@@ -1,10 +1,25 @@
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
 import Product from "../models/product";
 import Order from "../models/orders";
 import User from "../models/user";
 import Post from "../models/post";
 export const createProduct = async (req, res) => {
   try {
+    // Consolidate duplicate types
+    if (req.body.type && Array.isArray(req.body.type)) {
+      const uniqueTypes = Object.values(
+        req.body.type.reduce((acc, curr) => {
+          const key = `${curr.color}-${curr.size}`;
+          if (acc[key]) {
+            acc[key].quantity = Number(acc[key].quantity) + Number(curr.quantity);
+          } else {
+            acc[key] = { ...curr, quantity: Number(curr.quantity) };
+          }
+          return acc;
+        }, {})
+      );
+      req.body.type = uniqueTypes;
+    }
     const products = await new Product(req.body).save();
     res.json(products);
   } catch (error) {
@@ -293,6 +308,22 @@ export const removeProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
+    // Consolidate duplicate types
+    if (req.body.type && Array.isArray(req.body.type)) {
+      const uniqueTypes = Object.values(
+        req.body.type.reduce((acc, curr) => {
+          const key = `${curr.color}-${curr.size}`;
+          if (acc[key]) {
+            acc[key].quantity = Number(acc[key].quantity) + Number(curr.quantity);
+          } else {
+            acc[key] = { ...curr, quantity: Number(curr.quantity) };
+          }
+          return acc;
+        }, {})
+      );
+      req.body.type = uniqueTypes;
+    }
+
     const Products = await Product.findOneAndUpdate(
       { _id: req.params.id },
       req.body,

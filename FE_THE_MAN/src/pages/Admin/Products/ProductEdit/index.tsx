@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlineX, HiOutlineCheck } from "react-icons/hi";
 import { toast } from "react-toastify";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
-  addProduct,
   getProduct,
-  updateProduct,
+  updateProduct
 } from "../../../../redux/slices/productSlice";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -72,8 +71,8 @@ const ProductEdit = () => {
     const old = previews.filter((item: any) => item.url !== data);
     setPreviews(old);
   };
-  const product = useSelector((state:any)=>state?.product?.product)
-  console.log("spam",product)
+  const product = useSelector((state: any) => state?.product?.product)
+  console.log("spam", product)
 
   const onSetPrivews = (e: any) => {
     for (let index = 0; index < e.target.files.length; index++) {
@@ -91,10 +90,10 @@ const ProductEdit = () => {
       const apiUrl = "https://api.cloudinary.com/v1_1/dmlv9tzte/image/upload";
       const images = values.image[0];
       let data: any
-      
-      if(values?.image != product?.image) {
+
+      if (values?.image != product?.image) {
         console.log("c");
-        
+
         const formdata = new FormData();
         formdata.append("file", images);
         formdata.append("upload_preset", "duanTn");
@@ -106,7 +105,7 @@ const ProductEdit = () => {
         data = dataimg
       }
       let imgs = [];
-      if(previews.length > 0) {
+      if (previews.length > 0) {
         for (let index = 0; index < previews.length; index++) {
           const formDataImageSlide = new FormData();
           formDataImageSlide.append("file", previews[index].targetfile);
@@ -116,42 +115,56 @@ const ProductEdit = () => {
               "Content-type": "application/form-data",
             },
           });
-  
+
           imgs.push(data.url);
         }
       }
 
 
+      // Consolidate duplicate types
+      const uniqueTypes = Object.values(
+        values.type.reduce((acc: any, curr: any) => {
+          const key = `${curr.color}-${curr.size}`;
+          if (acc[key]) {
+            acc[key].quantity = Number(acc[key].quantity) + Number(curr.quantity);
+          } else {
+            acc[key] = { ...curr, quantity: Number(curr.quantity) };
+          }
+          return acc;
+        }, {})
+      );
+      values.type = uniqueTypes as IType[];
+
       let producta = {};
-      if(!data && imgs.length < 1) {
-         producta = {
+      if (!data && imgs.length < 1) {
+        producta = {
           ...values,
           image: product?.image,
           subimg: product?.subimg,
         };
-          
-      }else if(!data && imgs.length>0){
+
+      } else if (!data && imgs.length > 0) {
         producta = {
           ...values,
           image: product?.image,
           subimg: imgs,
         };
-      }else if(imgs.length < 1 && data.url) {
+      } else if (imgs.length < 1 && data.url) {
         producta = {
           ...values,
           image: data?.url,
           subimg: product?.subimg,
         };
-      }else {
+      } else {
         producta = {
           ...values,
           image: data.url,
           subimg: imgs,
         };
-        
+
       }
       console.log("ce", producta);
-      
+
       await dispatch(updateProduct(producta)).unwrap();
       toast.success("Sửa sản phẩm thành công !", {
         position: "top-right",
@@ -165,7 +178,7 @@ const ProductEdit = () => {
       navigate("/admin/products");
     } catch (error) {
       console.log("lỗi");
-      
+
     }
   };
 
@@ -432,11 +445,11 @@ const ProductEdit = () => {
                       </label>
                       <div className="mt-1 w-40 h-40 relative">
                         <img
-                          src={preview ? preview :product.image
+                          src={preview ? preview : product.image
                           }
                           alt="Preview Image"
                           className="h-40 w-40 rounded-sm object-cover"
-                          // layout="fill"
+                        // layout="fill"
                         />
                       </div>
                     </div>
@@ -480,16 +493,16 @@ const ProductEdit = () => {
                       </div>
                     </div>
                     <div>
-                    <div className="mt-1 w-40 h-40 flex gap-2">
-                        {product?.subimg?.map((item:any) => {
+                      <div className="mt-1 w-40 h-40 flex gap-2">
+                        {product?.subimg?.map((item: any) => {
                           return <img
-                          src={item}
-                          alt="Preview Image"
-                          className="h-40 w-40 rounded-sm object-cover"
+                            src={item}
+                            alt="Preview Image"
+                            className="h-40 w-40 rounded-sm object-cover"
                           // layout="fill"
-                        />
+                          />
                         })}
-                       
+
                       </div>
                       <label className="block text-sm font-medium text-gray-700">
                         Ảnh sản phẩm
@@ -526,7 +539,7 @@ const ProductEdit = () => {
                                         }
                                         alt="Preview Image"
                                         className="h-40 w-40 rounded-sm object-cover"
-                                        // layout="fill"
+                                      // layout="fill"
                                       />
                                       <HiOutlineX
                                         className="text-[54px] mr-2 cursor-pointer"
@@ -543,7 +556,7 @@ const ProductEdit = () => {
                                   }
                                   alt="Preview Image"
                                   className="h-40 w-40 rounded-sm object-cover"
-                                  // layout="fill"
+                                // layout="fill"
                                 />
                               )}
                             </div>
