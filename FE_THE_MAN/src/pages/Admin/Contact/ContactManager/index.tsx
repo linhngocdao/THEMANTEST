@@ -8,7 +8,7 @@ import {
   AiOutlineUser
 } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import Swal from "sweetalert2";
+import { Modal, message } from "antd";
 import {
   deleteContact,
   getAllContact,
@@ -19,7 +19,6 @@ import { RootState } from "../../../../redux/store";
 import styles from "./Contact.module.css";
 import { useEffect, useState } from "react";
 
-type Props = {};
 
 const ContactManager = () => {
   const [isShowModal, setIsShowModal] = useState(false);
@@ -30,19 +29,16 @@ const ContactManager = () => {
   const dispatch = useDispatch<any>();
 
   const handleRemove = (id: any) => {
-    Swal.fire({
+    Modal.confirm({
       title: "Bạn có chắc chắn muốn xóa không?",
-      text: "Không thể hoàn tác sau khi xóa",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+      content: "Không thể hoàn tác sau khi xóa",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk: async () => {
         await dispatch(deleteContact(id)).unwrap();
-        Swal.fire("Thành công!", "Xóa thành công.", "success");
-      }
+        message.success("Xóa thành công.");
+      },
     });
   };
   useEffect(() => {
@@ -59,15 +55,15 @@ const ContactManager = () => {
         {/* <div className={styles.title}>Danh sách liên hệ</div> */}
         <form action="" className="inline-flex">
           <div className="pr-4">
-              <input className="pl-4 border-2 border-gray-400 border-solid min-w-[250px] py-[6px] rounded-xl"  placeholder="Tìm kiếm" type="text" name="" id="" />
+            <input className="pl-4 border-2 border-gray-400 border-solid min-w-[250px] py-[6px] rounded-xl" placeholder="Tìm kiếm" type="text" name="" id="" />
           </div>
           <div className="pr-4">
-              <input className="pl-4 border-2 border-gray-400 border-solid min-w-[250px] py-[6px] rounded-xl"  placeholder="Tìm kiếm" type="text" name="" id="" />
+            <input className="pl-4 border-2 border-gray-400 border-solid min-w-[250px] py-[6px] rounded-xl" placeholder="Tìm kiếm" type="text" name="" id="" />
           </div>
           <div className="pr-4">
-              <input className="pl-4 border-2 border-gray-400 border-solid min-w-[250px] py-[6px] rounded-xl"  placeholder="Tìm kiếm" type="text" name="" id="" />
+            <input className="pl-4 border-2 border-gray-400 border-solid min-w-[250px] py-[6px] rounded-xl" placeholder="Tìm kiếm" type="text" name="" id="" />
           </div>
-        <button className="inline-flex items-center px-6 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2A303B] hover:bg-[#4D535E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4D535E]">Tìm kiếm</button>
+          <button className="inline-flex items-center px-6 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2A303B] hover:bg-[#4D535E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4D535E]">Tìm kiếm</button>
         </form>
       </header>
       <main>
@@ -81,6 +77,7 @@ const ContactManager = () => {
                 <td>Họ Và Tên</td>
                 <td>Email</td>
                 <td>Số Điện Thoại</td>
+                <td>Nội dung</td>
                 <td>Hành động</td>
               </tr>
             </thead>
@@ -93,6 +90,7 @@ const ContactManager = () => {
                     <td>{item.fullName}</td>
                     <td>{item.email}</td>
                     <td>{item.phoneNumber}</td>
+                    <td className="max-w-[200px] truncate" title={item.content}>{item.content}</td>
                     <td className={styles.action}>
                       <AiOutlineInfoCircle
                         className={styles.info}
