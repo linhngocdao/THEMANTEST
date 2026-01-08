@@ -1,16 +1,15 @@
-import React, { useEffect } from "react";
+import { Modal, message } from "antd";
+import { useEffect } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { TiPlus } from "react-icons/ti";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
 import {
   deleteCatePost,
   getAllCatePosts,
 } from "../../../../redux/slices/catePostSlice";
 import styles from "./CatePostManager.module.css";
 
-type Props = {};
 
 const CategoryPostManager = () => {
   const cateposts = useSelector((state: any) => state.catepost);
@@ -22,20 +21,17 @@ const CategoryPostManager = () => {
   }, [dispatch]);
 
   const handremove = (id: any) => {
-    Swal.fire({
+    Modal.confirm({
       title: "Bạn có chắc chắn muốn xóa không?",
-      text: "Không thể hoàn tác sau khi xóa",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+      content: "Không thể hoàn tác sau khi xóa",
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk: async () => {
         await dispatch(deleteCatePost(id));
-        Swal.fire("Thành công!", "Xóa thành công.", "success");
+        message.success("Xóa thành công.");
         dispatch(getAllCatePosts());
-      }
+      },
     });
   };
 
